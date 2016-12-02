@@ -1,5 +1,7 @@
 version: '2'
 services:
+  cni:
+    build: ../images/cni
   libvirt:
     build: ../images/libvirt/
     pid: host
@@ -46,8 +48,8 @@ services:
       - /boot:/boot:ro
       - /run:/run
       - libvirt_volume_pool:/var/lib/virtlet
-      - /opt/cni:/opt/cni
-      - /etc/cni:/etc/cni
+    volumes_from:
+      - cni
     depends_on:
       - libvirt
       - virtlet-dhcp

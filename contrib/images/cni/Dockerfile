@@ -1,9 +1,8 @@
 FROM busybox
 
-Maintainer Piotr Skamruk <pskamruk@mirantis.com>
+MAINTAINER Piotr Skamruk <pskamruk@mirantis.com>
 
-ADD etc/ /
-ADD opt/ /
-ADD start.sh /
+ADD etc /etc
+ADD opt /opt
 
-CMD ["/start.sh"]
+VOLUME ["/opt/cni", "/etc/cni"]

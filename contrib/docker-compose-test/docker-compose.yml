@@ -21,8 +21,8 @@ services:
       - /lib/modules:/lib/modules:ro
       - /boot:/boot:ro
       - libvirt_volume_pool:/var/lib/virtlet
-      - ../images/cni/opt/cni/bin:/opt/cni/bin:ro
-      - ../images/cni/etc/cni/net.d:/etc/cni/net.d:ro
+    volumes_from:
+      - cni
     depends_on:
       - libvirt
     links:
@@ -30,6 +30,7 @@ services:
     command: "/bin/bash -c 'if ! make check; then find . -name test-suite.log | xargs cat; exit 1; fi'"
   virtlet:
     build: ../..
+    privileged: true
     environment:
       - VIRTLET_LOGLEVEL=3
       - VIRTLET_DISABLE_KVM=1
@@ -38,8 +39,8 @@ services:
       - /boot:/boot:ro
       - libvirt_volume_pool:/var/lib/virtlet
       - virtlet_run:/run
-      - ../images/cni/opt/cni/bin:/opt/cni/bin:ro
-      - ../images/cni/etc/cni/net.d:/etc/cni/net.d:ro
+    volumes_from:
+      - cni
     depends_on:
       - libvirt
     links:
