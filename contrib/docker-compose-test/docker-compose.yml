@@ -1,20 +1,8 @@
 version: '2'
 services:
-  virtlet_test:
-    image: virtlet_build
-    # 'privileged' is necessary here for network management
-    privileged: true
-    environment:
-      - LIBVIRT_CLEANUP
-      - VIRTLET_LOGLEVEL=3
-      - VIRTLET_DISABLE_KVM=1
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup
-      - /lib/modules:/lib/modules:ro
-      - /boot:/boot:ro
-    command: "/bin/bash -c './autogen.sh && ./configure && make && make install && if ! make check; then find . -name test-suite.log | xargs cat; exit 1; fi'"
   virtlet:
-    build: ../..
+    # build: ../..
+    image: virtlet_build
     privileged: true
     environment:
       - LIBVIRT_CLEANUP
@@ -26,6 +14,7 @@ services:
       - /boot:/boot:ro
       # contains virtlet socket
       - virtlet_run:/run
+    command: "/start.sh"
   local_cluster:
     privileged: true
     build:

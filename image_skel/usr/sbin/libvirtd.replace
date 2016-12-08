@@ -1,0 +1,15 @@
+#!/bin/bash
+set -u -e
+if [[ -f /tmp/vrun ]]; then
+    echo >& 2 "dupe!"
+    touch /tmp/dupe
+fi
+
+touch /tmp/vrun
+
+echo >&2 "libvirtd cmd line: $*"
+pstree -p >&2
+
+ls -l /etc/libvirt >&2
+
+/usr/sbin/libvirtd.orig "$@"

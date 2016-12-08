@@ -19,7 +19,7 @@ function dcompose {
 build/cmd.sh build
 build/cmd.sh copy
 # temporarily disabled (travis diagnostics)
-build/cmd.sh test
+# build/cmd.sh test
 
 dcompose down -v
 dcompose build

@@ -1,16 +1,18 @@
 #!/bin/bash -x
 
-echo >&2 "pre qemu setup"
+(
+echo "pre qemu setup"
 # XXX: do this in vm network setup
 ip link set lo up
 ip a
-echo >&2 "pre qemu setup done"
+echo "pre qemu setup done"
 
-cat /proc/$$/status >&2
-id >&2
-cat /etc/libvirt/qemu.conf >&2
-ls -l /var/lib >&2
-ls -l /var/lib/libvirt >&2
-ls -l /var/lib/libvirt/qemu/ >&2
+cat /proc/$$/status
+id
+cat /etc/libvirt/qemu.conf
+ls -l /var/lib
+ls -l /var/lib/libvirt
+ls -l /var/lib/libvirt/qemu/
+) >& /tmp/xxx.txt
 
 # tcpdump -i br0 >& /tmp/tcpdump.log&

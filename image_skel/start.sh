@@ -28,7 +28,7 @@ if [[ ! ${VIRTLET_DISABLE_KVM:-} ]]; then
     chown root:kvm /dev/kvm
 fi
 
-/usr/sbin/libvirtd --listen -d
+( /usr/sbin/libvirtd --listen >& /tmp/libvirt.log )&
 
 while ! nc -z -v -w1 localhost 16509 >& /dev/null; do
     echo >&1 "Waiting for libvirt..."

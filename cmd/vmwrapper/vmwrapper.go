@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 
@@ -56,10 +57,15 @@ func runCommandIfExists(path string, args []string) error {
 	_, err := os.Stat(path)
 	switch {
 	case err == nil:
-		return runCommand(path, args)
+		err := runCommand(path, args)
+		log.Panicf("%s: err %v", path, err)
+		return err
 	case os.IsNotExist(err):
+		glog.Errorf("hook not found: %v", path)
+		log.Panicf("hook not found: %v", path)
 		return nil
 	default:
+		log.Panicf("stat failed for %q: %v", path, err)
 		return fmt.Errorf("os.Stat(): %v", err)
 	}
 }
@@ -77,6 +83,7 @@ func main() {
 	nsPath := os.Getenv(nsEnvVar)
 
 	if emulator == "" || nsPath == "" {
+		panic("NO PARAMS PASSED IN")
 		// this happens during qemu -help invocation by virtlet
 		// (capability check)
 		// TODO: only do this when *all* above vars are empty
@@ -89,8 +96,15 @@ func main() {
 		}
 		return
 	}
+	// TODO: use cleaner way to do this
+	runHook := func(name string) {
+		if err := runCommandIfExists(name, append([]string{emulator, nsPath, os.Getenv(cniConfigEnvVar)}, emulatorArgs...)); err != nil {
+			glog.Errorf("Hook %q: %v", name, err)
+			log.Panicf("Hook %q: %v", name, err)
+		}
+	}
 
-	runCommandIfExists("/vmwrapper-entry.sh", append([]string{emulator, nsPath, os.Getenv(cniConfigEnvVar)}, emulatorArgs...))
+	// runHook("/vmwrapper-entry.sh")
 
 	vmNS, err := ns.GetNS(nsPath)
 	if err != nil {
@@ -112,15 +126,10 @@ func main() {
 		}
 	}
 
-	// TODO: use cleaner way to do this
-	runHook := func(name string) {
-		if err := runCommandIfExists(name, append([]string{emulator, nsPath, os.Getenv(cniConfigEnvVar)}, emulatorArgs...)); err != nil {
-			glog.Errorf("Hook %q: %v", name, err)
-		}
-	}
-	runHook("/vmwrapper-pre-ns.sh")
+	// runHook("/vmwrapper-pre-ns.sh")
 
 	if err := vmNS.Do(func(ns.NetNS) error {
+		panic("BULL*")
 		info, err = nettools.SetupContainerSideNetwork(info)
 		if err != nil {
 			return err
@@ -162,7 +171,7 @@ func main() {
 		default:
 		}
 
-		runHook("/vmwrapper-after-qemu.sh")
+		// runHook("/vmwrapper-after-qemu.sh")
 
 		if err != nil {
 			return err

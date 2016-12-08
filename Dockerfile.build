@@ -26,7 +26,8 @@ RUN apt-get update && \
                 libvirt-bin \
                 python-libvirt \
                 ceph-common \
-                netbase && \
+                netbase \
+                psmisc && \
     apt-get clean
 
 ENV GOPATH /go
@@ -48,3 +49,6 @@ RUN mkdir -p ~/.ssh && \
     ln -s /go/src/github.com/Mirantis/virtlet/_output/vmwrapper /vmwrapper
 
 COPY image_skel /.
+
+RUN mv /usr/sbin/libvirtd /usr/sbin/libvirtd.orig
+RUN mv /usr/sbin/libvirtd.replace /usr/sbin/libvirtd
